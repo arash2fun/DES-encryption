@@ -660,7 +660,7 @@ int main ()
 
 
 	cout << "please enter the " << (htext ? "HEX code" : "text") << " to " << ((decrypt) ? "decrypt : " : "encrypt : ") << endl;
-	cout << " enter 'xxx' to indicate the end of your text." << endl;
+	cout << "enter 'xxx' to indicate the end of your text." << endl;
 
 	text = get_text();
 
