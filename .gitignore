@@ -1,0 +1,5 @@
+*.cproject
+.project
+*.prefs
+Debug/src/DES.o
+/Debug/
