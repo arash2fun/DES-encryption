@@ -12,9 +12,6 @@
 #include <cmath>
 
 
-//#include <hexbin.h>
-
-
 using namespace std;
 
 
@@ -202,7 +199,7 @@ bits connect_bits(bits f, bits b)
 void print_bits(const bits bits)
 {
 	for (unsigned int i = 0; i < bits.size(); i++)
-		cout << bits[i]; // << " ";
+		cout << bits[i];
 	cout << endl;
 }
 
@@ -348,7 +345,6 @@ bits hex_to_bits(string h)
 	for (unsigned int i = 0; i < h.size(); i++)
 	{
 		b = connect_bits(b, dec_to_bits(get_dec(h[i])));
-//		print_bits(b);
 	}
 
 	return b;
@@ -381,12 +377,6 @@ hexadec bits_to_hex(bits b)
 
 	return h;
 }
-
-
-
-//=================================
-
-
 
 void fill_table(table& a, int b[], int n)
 {
@@ -430,12 +420,6 @@ void create_subkeys(vector<bits>& subkeys, bits key)
 		key.push_back(0);
 	bits pkey = permute(key, pc1);
 
-//	cout << "key : ";
-//	print_bits(key);
-//	cout << "pkey : ";
-//	print_bits(pkey);
-
-
 	vector<bits> C(17), D(17);
 
 	for (unsigned int i = 0; i < pkey.size(); i++)
@@ -450,40 +434,20 @@ void create_subkeys(vector<bits>& subkeys, bits key)
 	{
 		C[i + 1] = shift_left(C[i], num_left_shift[i]);
 		D[i + 1] = shift_left(D[i], num_left_shift[i]);
-//		cout << "C" << i+1 << " : ";
-//		print_bits(C[i + 1]);
 		CD[i] = connect_bits(C[i + 1], D[i + 1]);
 		subkeys[i] = permute(CD[i], pc2);
 	}
-
-//	cout << "cd1 : ";
-//	print_bits(CD[0]);
-//	cout << "k1 : ";
-//	print_bits(subkeys[0]);
-
-
 }
-
 
 bits feistel(bits Rn, bits Kn, table E, table P)
 {
 	bits Er = permute(Rn, E);
 	bits Kr;
 
-//	cout << "R0 : ";
-//	print_bits(Rn);
-//	cout << "ER : ";
-//	print_bits(Er);
-//	cout << "K1 : ";
-//	print_bits(Kn);
 	for (int i = 0; i < 48; i++)
 	{
 		Kr.push_back(Er[i] ^ Kn[i]);
 	}
-
-//	cout << "K+E: ";
-//	print_bits(Kr);
-
 
 	bits out, rowb(2), colb(4);
 	int col, row;
@@ -496,28 +460,17 @@ bits feistel(bits Rn, bits Kn, table E, table P)
 		for (int j = 0; j < 4; j++)
 			colb[j] = Kr[6 * i + j + 1];
 		col = bits_to_dec(colb);
-//		cout << row << "  -  " << col << "  -  " << i << endl;
-
 
 		out = connect_bits(out, dec_to_bits(sbox[i][row][col]));
 	}
 
-//	print_bits(out);
-
 	bits pout = permute(out, P);
 	return pout;
-//	print_bits(pout);
 }
 
 bits encrypt_block(bits block, vector<bits> subkeys, table IP, table FP, bool decrypt = 0)
 {
 	bits pblock = permute(block, IP);
-
-//	cout << "m : ";
-//	print_bits(block);
-//	cout << "ip: ";
-//	print_bits(pblock);
-
 
 	vector<bits> L(17), R(17);
 
@@ -547,21 +500,10 @@ bits encrypt_block(bits block, vector<bits> subkeys, table IP, table FP, bool de
 
 		for (int j = 0; j < 32; j++)
 			R[i + 1].push_back(L[i][j] ^ temp[j]);
-
-//		cout << "K" << i+1 << " : ";
-//		print_bits(subkeys[i]);
 	}
-
-
-//	print_bits(L[16]);
-//	print_bits(R[16]);
 
 	crypted_block = connect_bits(R[16], L[16]);
 	bits pcrypted = permute(crypted_block, FP);
-
-//	print_bits(crypted_block);
-//	print_bits(pcrypted);
-
 	return pcrypted;
 }
 
@@ -594,7 +536,6 @@ bits encrypt(bits text, bits key, bool decrypt = 0)
 
 	return crypted_bits;
 }
-
 
 void welcome(bool& decrypt, bool& htext)
 {
@@ -637,11 +578,8 @@ void welcome(bool& decrypt, bool& htext)
 	else
 		htext = true;
 
-
 	cout << "\n\n";
 }
-
-
 
 int main ()
 {
@@ -649,34 +587,21 @@ int main ()
 	bool htext = 1;
 	welcome(decrypt, htext);
 
-
 	string text = "";
 	string key = "";
 
 	bits textb;
 	bits keyb;
 
-
-
-
 	cout << "please enter the " << (htext ? "HEX code" : "text") << " to " << ((decrypt) ? "decrypt : " : "encrypt : ") << endl;
 	cout << "enter 'xxx' to indicate the end of your text." << endl;
 
 	text = get_text();
 
-//	cout << text << " size : " << text.size() << endl;
-
 	if (text == "") text = "   ";
-
-//	cout << text << endl;
-
-//	print_bits(textb);
-
-//	cout << bits_to_dec(textb) << endl;
 
 	cout << "please enter a key : " << endl;
 	key = get_text();
-
 
 	if (htext)
 	{
@@ -689,14 +614,7 @@ int main ()
 		keyb = char_to_bits(key);
 	}
 
-
-//	cout << key << "    size : " << key.size();
-
-//	print_bits(keyb);
-
-//	cout << text << endl;
 	bits cryptedb = encrypt(textb, keyb, decrypt);
-//	print_bits(cryptedb);
 	cout << (decrypt ? "decrypted" : "encrypted") << " text is :" << endl;
 	cout << "in HEX : " << endl;
 	cout << bits_to_hex(cryptedb) << endl;
@@ -707,7 +625,7 @@ int main ()
 	cout << "\n\nthe key is :" << endl;
 	cout << bits_to_hex(keyb) << endl;
 	cout << "enter 'x' to exit." << endl;
-//	cout << crp;
+
 	char exit;
 	while (exit != 'x')
 		cin >> exit;
