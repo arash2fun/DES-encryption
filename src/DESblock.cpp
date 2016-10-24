@@ -112,6 +112,56 @@ const int DESblock::P[] = {16, 7, 20, 21,
 			19, 13, 30, 6,
 			22, 11, 4, 25};
 
+
+int DESblock::get_dec(char h)
+{
+	switch (h)
+	{
+	case '0':
+		return 0;
+	case '1':
+		return 1;
+	case '2':
+		return 2;
+	case '3':
+		return 3;
+	case '4':
+		return 4;
+	case '5':
+		return 5;
+	case '6':
+		return 6;
+	case '7':
+		return 7;
+	case '8':
+		return 8;
+	case '9':
+		return 9;
+	case 'A':
+	case 'a':
+		return 10;
+	case 'B':
+	case 'b':
+		return 11;
+	case 'C':
+	case 'c':
+		return 12;
+	case 'D':
+	case 'd':
+		return 13;
+	case 'E':
+	case 'e':
+		return 14;
+	case 'F':
+	case 'f':
+		return 15;
+	default:
+		return 0;
+
+	}
+
+}
+
 int DESblock::pow(const int a, const int n)
 {
 	int b = 1;
@@ -122,6 +172,8 @@ int DESblock::pow(const int a, const int n)
 
 void DESblock::dec_to_bits(bit bits[4], int d)
 {
+	for (int i = 0; i < 4; i++)
+		bits[i] = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		if (d >= 2)
@@ -156,6 +208,13 @@ void DESblock::connect_bits(bit res[], const bit c[], const bit d[], int size)
 	}
 }
 
+void DESblock::add_bits(bit res[], const bit a[], int size, int from)
+{
+	for (int i = 0; i < size; i++)
+		res[i + from] = a[i];
+}
+
+
 void DESblock::permute(bit pb[], const bit b[], const int t[], const int size)
 {
 	for (int i = 0; i < size; i++)
@@ -178,6 +237,16 @@ void DESblock::shift_left(bit a[],const bit b[], unsigned int n)
 			a[i] = temp[i - (28 - n)];
 		else
 			a[i] = b[i + n];
+	}
+}
+
+void DESblock::create_bits(bit bits[64], const char text[])
+{
+	for (int i = 0; i < 16; i++)
+	{
+		bit cbit[4];
+		DESblock::dec_to_bits(cbit,DESblock::get_dec(text[i]));
+		DESblock::add_bits(bits, cbit, 4, (i*4));
 	}
 }
 
@@ -207,6 +276,13 @@ void DESblock::create_subkeys(bit subkeys[16][48], bit key[64])
 
 		permute(subkeys[i], CD[i], PC2, 48);
 	}
+}
+
+void DESblock::create_subkeys(bit subkeys[16][48], char key[])
+{
+	bit bkey[64];
+	DESblock::create_bits(bkey, key);
+	DESblock::create_subkeys(subkeys, bkey);
 }
 
 void DESblock::feistel(bit pout[], const bit Rn[], const bit Kn[])
@@ -280,7 +356,12 @@ void DESblock::encrypt_block(bit pcrypted[64], bit block[64],bit subkeys[16][48]
 	permute(pcrypted, crypted_block, FP, 64);
 }
 
-
+void DESblock::encrypt_block(bit pcrypt[64], char text[], bit subkeys[16][48], bool decrypt)
+{
+	bit block[64];
+	DESblock::create_bits(block, text);
+	DESblock::encrypt_block(pcrypt, block, subkeys, decrypt);
+}
 
 
 
