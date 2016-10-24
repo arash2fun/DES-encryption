@@ -14,6 +14,7 @@ class DESblock {
 public:
 	static void encrypt_block(bit pcrypted[64], bit block[64],bit subkeys[16][48], bool decrypt = 0);
 	static void encrypt_block(bit pcrypt[64], char text[], bit subkeys[16][48], bool decrypt = 0);
+	static void encrypt_block(char pcrypted[], char text[], bit subkeys[16][48], bool decrypt = 0);
 	static void create_subkeys(bit subkeys[16][48], bit key[64]);
 	static void create_subkeys(bit subkeys[16][48], char key[]);
 
@@ -36,7 +37,9 @@ private:
 	static int bits_to_dec(bit b[], int size);
 	static int pow(const int a, const int n);
 	static void create_bits(bit bits[64], const char text[]);
+	static char get_char(int a);
 	static int get_dec(char h);
+	static void create_hex(char hex[], const bit bits[64]);
 
 };
 

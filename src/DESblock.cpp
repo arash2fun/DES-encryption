@@ -7,6 +7,7 @@
 
 #include "DESblock.h"
 
+
 const int DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
 		 1, 58, 50, 42, 34, 26, 18,
 		 10, 2, 59, 51, 43, 35, 27,
@@ -112,6 +113,47 @@ const int DESblock::P[] = {16, 7, 20, 21,
 			19, 13, 30, 6,
 			22, 11, 4, 25};
 
+char DESblock::get_char(int a)
+{
+	switch (a)
+	{
+	case 0:
+		return '0';
+	case 1:
+		return '1';
+	case 2:
+		return '2';
+	case 3:
+		return '3';
+	case 4:
+		return '4';
+	case 5:
+		return '5';
+	case 6:
+		return '6';
+	case 7:
+		return '7';
+	case 8:
+		return '8';
+	case 9:
+		return '9';
+	case 10:
+		return 'A';
+	case 11:
+		return 'B';
+	case 12:
+		return 'C';
+	case 13:
+		return 'D';
+	case 14:
+		return 'E';
+	case 15:
+		return 'F';
+	default:
+		return ' ';
+	}
+}
+
 
 int DESblock::get_dec(char h)
 {
@@ -195,7 +237,7 @@ int DESblock::bits_to_dec(bit b[], int size)
 
 	for (int i = 0; i < size; i++)
 		if (b[i])
-			d += pow(2, size - (i + 1));
+			d += DESblock::pow(2, size - (i + 1));
 	return d;
 }
 
@@ -237,6 +279,18 @@ void DESblock::shift_left(bit a[],const bit b[], unsigned int n)
 			a[i] = temp[i - (28 - n)];
 		else
 			a[i] = b[i + n];
+	}
+}
+
+void DESblock::create_hex(char hex[], const bit bits[64])
+{
+	for (int i = 0; i < 16; i++)
+	{
+		bit temp[4] = {0, 0, 0, 0};
+		for (int j = 0; j < 4; j++)
+			temp[j] = bits[4 * i + j];
+
+		hex[i] = DESblock::get_char(DESblock::bits_to_dec(temp, 4));
 	}
 }
 
@@ -314,7 +368,6 @@ void DESblock::feistel(bit pout[], const bit Rn[], const bit Kn[])
 		dec_to_bits(sout, SBOX[i][row][col]);
 		for (int j = 0; j < 4; j++)
 			out[4 * i + j] = sout[j];
-
 	}
 
 	permute(pout, out, P, 32);
@@ -363,6 +416,10 @@ void DESblock::encrypt_block(bit pcrypt[64], char text[], bit subkeys[16][48], b
 	DESblock::encrypt_block(pcrypt, block, subkeys, decrypt);
 }
 
-
-
+void DESblock::encrypt_block(char pcrypted[], char text[], bit subkeys[16][48], bool decrypt)
+{
+	bit crypted[64];
+	DESblock::encrypt_block(crypted, text, subkeys, decrypt);
+	DESblock::create_hex(pcrypted, crypted);
+}
 
