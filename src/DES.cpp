@@ -390,7 +390,7 @@ int main ()
 
 //	text = "0123456789ABCDEF";
 //	key =  "133457799BBCDFF1";
-
+//  crpt=  "85E813540F0AB405";
 
 	if (htext)
 	{
