@@ -8,7 +8,7 @@
 #include "DESblock.h"
 
 
-const int DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
+const char DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
 		 1, 58, 50, 42, 34, 26, 18,
 		 10, 2, 59, 51, 43, 35, 27,
 		 19, 11, 3, 60, 52, 44, 36,
@@ -17,7 +17,7 @@ const int DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
 		 14, 6, 61, 53, 45, 37, 29,
 		 21, 13, 5, 28, 20, 12, 4};
 
-const int DESblock::PC2[] = {14, 17, 11, 24, 1, 5,
+const char DESblock::PC2[] = {14, 17, 11, 24, 1, 5,
 			3, 28, 15, 6, 21, 10,
 			23, 19, 12, 4, 26, 8,
 			16, 7, 27, 20, 13, 2,
@@ -26,7 +26,7 @@ const int DESblock::PC2[] = {14, 17, 11, 24, 1, 5,
 			44, 49, 39, 56, 34, 53,
 			46, 42, 50, 36, 29, 32};
 
-const int DESblock::IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
+const char DESblock::IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
 			 60, 52, 44, 36, 28, 20, 12, 4,
 			 62, 54, 46, 38, 30, 22, 14, 6,
 			 64, 56, 48, 40, 32, 24, 16, 8,
@@ -36,7 +36,7 @@ const int DESblock::IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
 			 63, 55, 47, 39, 31, 23, 15, 7};
 
 
-const int DESblock::FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
+const char DESblock::FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
 			 39, 7, 47, 15, 55, 23, 63, 31,
 			 38, 6, 46, 14, 54, 22, 62, 30,
 			 37, 5, 45, 13, 53, 21, 61, 29,
@@ -46,13 +46,13 @@ const int DESblock::FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
 			 33, 1, 41, 9,  49, 17, 57, 25};
 
 
-const int DESblock::LEFT_SHIFT[] = {1, 1, 2, 2,
+const char DESblock::LEFT_SHIFT[] = {1, 1, 2, 2,
 						2, 2, 2, 2,
 						1, 2, 2, 2,
 						2, 2, 2, 1};
 
 
-const int DESblock::E[] = {32, 1, 2, 3, 4, 5,
+const char DESblock::E[] = {32, 1, 2, 3, 4, 5,
 			4, 5, 6, 7, 8, 9,
 			8, 9, 10, 11, 12, 13,
 			12, 13, 14, 15, 16, 17,
@@ -104,7 +104,7 @@ const int DESblock::SBOX[8][4][16] = {
 					 {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}}
 					 };
 
-const int DESblock::P[] = {16, 7, 20, 21,
+const char DESblock::P[] = {16, 7, 20, 21,
 			29, 12, 28, 17,
 			1, 15, 23, 26,
 			5, 18, 31, 10,
@@ -257,12 +257,12 @@ void DESblock::add_bits(bit res[], const bit a[], int size, int from)
 }
 
 
-void DESblock::permute(bit pb[], const bit b[], const int t[], const int size)
+void DESblock::permute(bit pb[], const bit b[], const char t[], const int size)
 {
 	for (int i = 0; i < size; i++)
 	{
 
-		pb[i] = b[t[i]-1];
+		pb[i] = b[(int)t[i]-1];
 	}
 }
 

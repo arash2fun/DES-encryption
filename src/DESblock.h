@@ -20,15 +20,15 @@ public:
 
 
 private:
-	static const int PC1[];
-	static const int PC2[];
-	static const int IP[];
-	static const int FP[];
-	static const int LEFT_SHIFT[];
-	static const int E[];
+	static const char PC1[];
+	static const char PC2[];
+	static const char IP[];
+	static const char FP[];
+	static const char LEFT_SHIFT[];
+	static const char E[];
 	static const int SBOX[8][4][16];
-	static const int P[];
-	static void permute(bit pb[], const bit b[], const int t[], const int size);
+	static const char P[];
+	static void permute(bit pb[], const bit b[], const char t[], const int size);
 	static void shift_left(bit a[],const bit b[], unsigned int n);
 	static void connect_bits(bit res[], const bit c[], const bit d[], int size);
 	static void add_bits(bit res[], const bit a[], int size, int from = 0);
