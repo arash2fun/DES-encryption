@@ -8,6 +8,11 @@
 #ifndef DESBLOCK_H_
 #define DESBLOCK_H_
 
+//encrypt block gets an empty array of bits or strings (pcrypt) and fills it with encrypted form of given block or text
+
+
+
+
 typedef bool bit;
 
 class DESblock {
@@ -17,6 +22,9 @@ public:
 	static void encrypt_block(char pcrypted[], char text[], bit subkeys[16][48], bool decrypt = 0);
 	static void create_subkeys(bit subkeys[16][48], bit key[64]);
 	static void create_subkeys(bit subkeys[16][48], char key[]);
+
+	static char get_char(int a);
+	static int get_dec(char h);
 
 
 private:
@@ -37,8 +45,6 @@ private:
 	static int bits_to_dec(bit b[], int size);
 	static int pow(const int a, const int n);
 	static void create_bits(bit bits[64], const char text[]);
-	static char get_char(int a);
-	static int get_dec(char h);
 	static void create_hex(char hex[], const bit bits[64]);
 
 };
