@@ -363,7 +363,7 @@ void welcome(bool& decrypt, bool& htext)
 
 	cout << "\n\n";
 }
-
+/*
 int main ()
 {
 	bool decrypt = 0;
@@ -422,6 +422,12 @@ int main ()
  	cout << "enter 'x' to exit." << endl;
 	while (exit != 'x')
 		cin >> exit;
-*/
+
 	return 0;
 }
+
+
+*/
+
+
+
