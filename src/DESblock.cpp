@@ -430,7 +430,7 @@ DESblock::bits & DESblock::bits::operator =(const bits & rhs)
 		for (int i = 0; i < _size; i++)
 		{
 			_list[i] = new unsigned char;
-			*_list[i] = *rhs._list[i];
+			*_list[i] = rhs.list(i);
 		}
 	}
 	return *this;
