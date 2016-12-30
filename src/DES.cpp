@@ -1,5 +1,5 @@
 /*
- * DESb.cpp
+ * DES.cpp
  *
  *  Created on: Dec 8, 2016
  *      Author: Arash
@@ -270,15 +270,6 @@ string des(string text, string k, const bool decrypt)
 	return answer;
 }
 
-/*
-int main ()
-{
-	bool decrypt = 0;
-	bool htext = 1;
-	welcome(decrypt, htext);
-=======
-
->>>>>>> refs/remotes/origin/shell-enhancement
 
 string getText(int n)
 {
@@ -360,14 +351,6 @@ void showCommandlineHelp()
 
 }
 
-<<<<<<< HEAD
-/*	char exit;
- 	cout << "enter 'x' to exit." << endl;
-	while (exit != 'x')
-		cin >> exit;
-
-	return 0;
-=======
 void showHelp()
 {
 	cout << "\nThis program can encrypt/decrypt texts with use of\n"
@@ -380,11 +363,4 @@ void showHelp()
 		 << "'c' or 'cancel'         cancel any chosen action\n"
 		 << "'exit'                  exit the program\n"
 		 << "'help'                  show help" << endl;
->>>>>>> refs/remotes/origin/shell-enhancement
 }
-
-
-*/
-
-
-
