@@ -3,3 +3,5 @@
 *.prefs
 Debug/src/DES.o
 /Debug/
+
+src/DES2.cpp

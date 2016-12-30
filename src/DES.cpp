@@ -1,429 +1,386 @@
 /*
- * DES.cpp
+ * DESb.cpp
  *
- *  Created on: Sep 16, 2016
+ *  Created on: Dec 8, 2016
  *      Author: Arash
  */
 
 #include <iostream>
-#include <cstdlib>
-#include <vector>
+#include <fstream>
 #include <string>
 
 #include "DESblock.h"
 
+
 using namespace std;
 
+int shell();
+int getCommand();
+void lowerCase(string & text);
+void showHelp();
+int encrypt(bool decrypt = 0, bool hexText = 1, bool hexKey = 0, bool file = 0, string inadd = "in.txt", string outadd = "out.txt", string key = "");
+string getText(int n = 0);
+string toHex(string a);
+string des(string text, string key, const bool decrypt = 0);
+void showCommandlineHelp();
 
-typedef bool bit;
-typedef vector<bit> bits;
-typedef string hexadec;
 
 
 
-
-
-int pow(const int a, const int n)
+int main(int argc, char * argv[])
 {
-	int b = 1;
-	for (int i = 0; i < n; i++)
-		b *= a;
-	return b;
-}
+	string inputfile = "in.txt", outputfile = "out.txt", key = "";
+	bool decrypt = 0, hexText = 0, hexKey = 0;
 
-void shift_buffer(string& buf)
-{
-	int s = buf.size();
-	for (int i = 0; i < s; i++)
+	if (argc == 1)
 	{
-		if (i < (s - 1))
-			buf[i] = buf[i + 1];
-		else
-			buf[i] = 'f';
+		shell();
+		return 0;
 	}
-}
 
-void clear_text(string& text)
-{
-	text = text.erase(0, 1);
-}
-
-string get_text()
-{
-	string buffer = "ccc";
-	string text = "";
-
-	while (buffer != "xxx")
+	if (argc > 1)
 	{
-		char c = cin.get();
-		text += c;
-		shift_buffer(buffer);
-		buffer[2] = c;
-	}
-	text = text.erase(text.size() - 3, 3);
-
-//	clear_text(text);
-
-	return text;
-}
-
-bits dec_to_bits(int d)
-{
-	bits bits(4, 0);
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (d >= 2)
+		for (int i = 1; i < argc; i++)
 		{
-			bits[3 - i] = d % 2;
-			d /= 2;
+			string arg(argv[i]);
+			if (arg == "-f" || arg == "-F")
+				inputfile = argv[i + 1];
+			else if (arg == "-fh" || arg == "-FH")
+			{
+				inputfile = argv[i + 1];
+				hexText = true;
+			}
+			else if (arg == "-o" || arg == "-O")
+				outputfile = argv[i + 1];
+			else if (arg == "-k" || arg == "-K")
+				key = argv[i + 1];
+			else if (arg == "-kh" || arg == "-KH")
+			{
+				key = argv[i + 1];
+				hexKey = true;
+			}
+			else if (arg == "-e" || arg == "-E")
+				decrypt = false;
+			else if (arg == "-d" || arg == "-D")
+				decrypt = true;
+			else if (arg == "help" || arg == "-HELP" || arg == "-help" || arg == "HELP")
+			{
+				showCommandlineHelp();
+				return 0;
+			}
 		}
-		else
+
+
+		encrypt(decrypt, (decrypt ? true : hexText), hexKey, true, inputfile, outputfile, key);
+	}
+
+	return 0;
+}
+
+
+int shell()
+{
+	cout << "\n\nWelcome to DES shell \nIf you don't know what to do enter 'help'." << endl;
+
+	int command;
+	do
+	{
+		command = getCommand();
+
+		switch (command)
 		{
-			bits[3 - i] = d;
+		case 1:
+		case 4:
+		case 5:
+		case 9:
+			cout << "\nError : Invalid input !" << endl;
+			break;
+		case 2:
+			command = encrypt();
+			break;
+		case 3:
+			command = encrypt(1);
+			break;
+		case 6:
+			showHelp();
 			break;
 		}
-	}
-	return bits;
+	} while (command);
+
+
+	cout << "\nExiting.." << endl;
+	return 0;
+
 }
 
-bits connect_bits(bits f, bits b)
+int encrypt(bool decrypt, bool hexText, bool hexKey, bool file, string inadd, string outadd, string key)
 {
-	bits a = f;
-	for (unsigned int i = 0; i < b.size(); i++)
-		a.push_back(b[i]);
-	return a;
-}
+	string text, answer;
 
-void print_bits(const bits bits)
-{
-	for (unsigned int i = 0; i < bits.size(); i++)
-		cout << bits[i];
-	cout << endl;
-}
-
-void print_bits(const bit bits[], const int size = 64)
-{
-	for (int i = 0; i < size; i++)
-		cout << bits[i];
-	cout << endl;
-}
-
-char get_hex(int a)
-{
-	switch (a)
+	if (!file)
 	{
-	case 0:
-		return '0';
-	case 1:
-		return '1';
-	case 2:
-		return '2';
-	case 3:
-		return '3';
-	case 4:
-		return '4';
-	case 5:
-		return '5';
-	case 6:
-		return '6';
-	case 7:
-		return '7';
-	case 8:
-		return '8';
-	case 9:
-		return '9';
-	case 10:
-		return 'A';
-	case 11:
-		return 'B';
-	case 12:
-		return 'C';
-	case 13:
-		return 'D';
-	case 14:
-		return 'E';
-	case 15:
-		return 'F';
-	default:
-		return ' ';
-	}
-}
+		int command;
+		cout << "\nPlease enter your text to " << (decrypt ? "decrypt" : "encrypt") << "." << endl;
+		cout <<"Indicate the end of your text with '~' symbol" << endl;
 
-int get_dec(char h)
-{
-	switch (h)
-	{
-	case '0':
-		return 0;
-	case '1':
-		return 1;
-	case '2':
-		return 2;
-	case '3':
-		return 3;
-	case '4':
-		return 4;
-	case '5':
-		return 5;
-	case '6':
-		return 6;
-	case '7':
-		return 7;
-	case '8':
-		return 8;
-	case '9':
-		return 9;
-	case 'A':
-		return 10;
-	case 'B':
-		return 11;
-	case 'C':
-		return 12;
-	case 'D':
-		return 13;
-	case 'E':
-		return 14;
-	case 'F':
-		return 15;
-	default:
-		return 0;
+		text = getText();
+		cin.ignore(100, '\n');
 
-	}
+		cout << "\nYour text is : " << text << endl;
 
-}
-
-hexadec char_to_hex(string a)
-{
-	hexadec h(a.size() * 2,0);
-	for (unsigned int i = 0; i < a.size(); i++)
-	{
-		h[2 * i] = get_hex((int)a[i] / 16);
-		h[2 * i + 1] = get_hex((int)a[i] % 16);
-	}
-	return h;
-}
-
-bits char_to_bits(string a)
-{
-	bits bits(8 * a.size(), 0);
-
-	for (unsigned int j = 0; j < a.size(); j++)
-	{
-		for (int i = 0; i < 8; i++)
+		if (!decrypt)
 		{
-			if (a[j] >= 2)
+			cout << "\nPlease specify that either your text is a hex code or just simple text?\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+
+			do
 			{
-				bits[8 * j + 7 - i] = a[j] % 2;
-				a[j] /= 2;
-			}
-			else
+				command = getCommand();
+
+				switch (command)
+				{
+				case 0:
+					return 0;
+				case 1:
+					cout << "\nCanceled.." << endl;
+					return 1;
+				case 2:
+				case 3:
+				case 9:
+					cout << "\nWrong input!\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+					continue;
+				case 6:
+					cout << "\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+					continue;
+				case 5:
+					hexText = false;
+					break;
+				case 4:
+					hexText = true;
+					break;
+				}
+
+				break;
+			} while (1);
+		}
+
+		cout << "\nPlease specify that either your key is a hex code or just simple text?\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+
+		do
+		{
+			command = getCommand();
+
+			switch (command)
 			{
-				bits[8 * j + 7 - i] = a[j];
+			case 0:
+				return 0;
+			case 1:
+				cout << "\nCanceled.." << endl;
+				return 1;
+			case 2:
+			case 3:
+			case 9:
+				cout << "\nWrong input!\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+				continue;
+			case 6:
+				cout << "\nEnter 'hex' or 'h' for hex code and 'text' or 't' for simple text." << endl;
+				continue;
+			case 5:
+				hexKey = false;
+				break;
+			case 4:
+				hexKey = true;
 				break;
 			}
-		}
-	}
-	return bits;
-}
+			break;
+		} while (1);
 
-string bits_to_char(bits bits)
-{
-	string a = "";
-	for (unsigned int i = 0; i <= ((bits.size() - 1) / 8); i++)
+		cout << "\nPlease enter your key for " << (decrypt ? "decryption" : "encryption") << endl;
+		cout << "The key must be " << (hexKey ? 16 : 8) << " characters." << endl;
+
+		key = getText(hexKey ? 16 : 8);
+		cin.ignore(100, '\n');
+
+		cout << "\nYour key is : " << key << endl;
+	} else {
+
+		ifstream infile;
+		infile.open(inadd.c_str(), ifstream::in);
+
+		char c;
+
+		while (infile.get(c))
+			text.push_back(c);
+
+		infile.close();
+	}
+
+	answer = des( (hexText ? text : toHex(text)), (hexKey ? key : toHex(key)), decrypt);
+
+
+
+	if (!file)
 	{
-		char temp = 0;
-		for (int j = 0; j < 8; j++)
-		{
-			if (bits[i * 8  + j])
-				temp += pow(2, 7 - j);
-		}
-		a.push_back(temp);
+		cout << "\n" << (decrypt ? "Decrypted" : "Encrypted") << " text : " << endl;
+		cout << answer << endl;
+
+		cout << "\nKey :" << endl;
+		cout << key << endl;
 	}
-
-	return a;
-}
-
-bits hex_to_bits(string h)
-{
-	bits b(0);
-
-	for (unsigned int i = 0; i < h.size(); i++)
+	else
 	{
-		b = connect_bits(b, dec_to_bits(get_dec(h[i])));
+		ofstream outfile;
+		outfile.open(outadd.c_str(), ofstream::out);
+
+		outfile << answer;
+
+		outfile.close();
+
+		cout << "\nKey :" << endl;
+		cout << key << endl;
 	}
 
-	return b;
+	return 1;
 }
 
-int bits_to_dec(bits b)
-{
-	int d = 0;
 
-	for (unsigned int i = 0; i < b.size(); i++)
-		if (b[i])
-			d += pow(2, b.size() - (i + 1));
-	return d;
-}
-
-hexadec bits_to_hex(bits b)
-{
-	hexadec h = "";
-
-	for (unsigned int i = 0; i <= ((b.size() - 1) / 4); i++)
-	{
-		int temp = 0;
-		bits btemp;
-		for (int j = 0; j < 4; j++)
-			btemp.push_back(b[4 * i + j]);
-		temp = bits_to_dec(btemp);
-		h.push_back(get_hex(temp));
-
-	}
-
-	return h;
-}
-
-bits encrypt(bits text, bits ikey, bool decrypt)
+string des(string text, string k, const bool decrypt)
 {
 	bit subkeys[16][48];
+	char block[16], pblock[16], key[16];
+	string answer;
 
-	bit key[64] = {0};
-	for (unsigned int i = 0; i < (ikey.size() < 64 ? ikey.size() : 64); i++)
-		key[i] = ikey[i];
+	for (unsigned int i = 0; i < 16; i++)
+	{
+		if ((text.size() % 16) != 0) text.push_back('0');
+		if ((k.size() % 16) != 0) k.push_back('0');
+		key[i] = k[i];
+	}
 
 	DESblock::create_subkeys(subkeys, key);
 
-	bits crypted_bits;
 
-	for (unsigned int i = 0; i <= ((text.size() - 1)/64); i++)
+	for (unsigned int i = 0; i < (text.size()/16); i++)
 	{
-		bit block[64] = {0};
-		for (int j = 0; j < 64; j++)
-		{
-			unsigned int d = i * 64 + j;
-			if (d < text.size())
-				block[j] = text[d];
-			else
-				break;
-		}
-		bits encrblv;
-		bit encrbl[64];
-		DESblock::encrypt_block(encrbl, block, subkeys, decrypt);
-		for (int f = 0; f < 64; f++)
-			encrblv.push_back(encrbl[f]);
-		crypted_bits = connect_bits(crypted_bits, encrblv);
+		for (unsigned int j = 0; j < 16; j++)
+			block[j] = text[i*16 + j];
+		DESblock::encrypt_block(pblock, block, subkeys, decrypt);
+		answer.append(pblock, 16);
 	}
 
-
-
-	return crypted_bits;
+	return answer;
 }
 
-void welcome(bool& decrypt, bool& htext)
-{
-	cout << "#####   WELCOME !   #####" << endl;
-	cout << "please choose the operation : " << endl;
-	cout << "enter 'e' for encryption and 'd' for decryption." << endl;
-	char c;
-	while ((c != 'e') && (c != 'E') && (c != 'd') && (c != 'D'))
-		cin >> c;
-
-	if ((c == 'e') || (c == 'E'))
-	{
-		cout << "Encryption chosen. " << endl;
-		decrypt = 0;
-	}
-	else
-	{
-		cout << "Decryption chosen." << endl;
-		decrypt = 1;
-	}
-	if (!decrypt)
-	{
-		cout << "please choose the type of your text." << endl;
-		cout << "enter 'h' for hex code and 't' for plain text." << endl;
-
-		while ((c != 'h') && (c != 'H') && (c != 't') && (c != 'T'))
-			cin >> c;
-
-		if ((c == 'h') || (c == 'H'))
-		{
-			cout << "HEX code chosen. " << endl;
-			htext = 1;
-		}
-		else
-		{
-			cout << "plain text chosen." << endl;
-			htext = 0;
-		}
-	}
-	else
-		htext = true;
-
-	cout << "\n\n";
-}
 /*
 int main ()
 {
 	bool decrypt = 0;
 	bool htext = 1;
 	welcome(decrypt, htext);
+=======
 
-	string text = "";
-	string key = "";
+>>>>>>> refs/remotes/origin/shell-enhancement
 
-	bits textb;
-	bits keyb;
+string getText(int n)
+{
+	char c;
+	string text;
 
-	cout << "please enter the " << (htext ? "HEX code" : "text") << " to " << ((decrypt) ? "decrypt : " : "encrypt : ") << endl;
-	cout << "enter 'xxx' to indicate the end of your text." << endl;
+	cout << "\nDES >> ";
 
-	text = get_text();
+	do {
+		cin.get(c);
+		if (n > 0 && text.size() == (unsigned int)n) return text;
+		if (c == '~') return text;
+		text.push_back(c);
+	} while (c);
 
-	if (text == "") text = "   ";
+	return text;
 
-	cout << "please enter a key : " << endl;
-	key = get_text();
-	clear_text(text);
-	clear_text(key);
+}
 
-//	text = "0123456789ABCDEF";
-//	key =  "133457799BBCDFF1";
-//  crpt=  "85E813540F0AB405";
 
-	if (htext)
+int getCommand()
+{
+	string command;
+	char com[256];
+	cout << "\nDES >> ";
+	cin.getline(com, 256);
+	command = com;
+
+	lowerCase(command);
+
+	if 		(command == "exit") 						return 0;
+	else if (command == "cancel" || command == "c")		return 1;
+	else if (command == "encrypt" || command == "e") 	return 2;
+	else if (command == "decrypt" || command == "d") 	return 3;
+	else if (command == "hex" || command == "h") 		return 4;
+	else if (command == "text" || command == "t") 		return 5;
+	else if (command == "help") 						return 6;
+
+	else 												return 9;
+}
+
+string toHex(string a)
+{
+	string h(a.size() * 2,0);
+	for (unsigned int i = 0; i < a.size(); i++)
 	{
-		textb = hex_to_bits(text);
-		keyb = hex_to_bits(key);
+		h[2 * i] = DESblock::get_char((int)a[i] / 16);
+		h[2 * i + 1] = DESblock::get_char((int)a[i] % 16);
 	}
-	else
+	return h;
+}
+
+void lowerCase(string& text)
+{
+	for (unsigned int i = 0; i < text.size(); i++)
 	{
-		textb = char_to_bits(text);
-		keyb = char_to_bits(key);
+		if (text[i] > 64 && text[i] < 91)
+			text[i] += 32;
 	}
-
-	bits cryptedb = encrypt(textb, keyb, decrypt);
-
-	cout << "your text :" << endl;
-	cout << text << endl;
-	cout << (decrypt ? "decrypted" : "encrypted") << " text is :" << endl;
-	cout << "in HEX : " << endl;
-	cout << bits_to_hex(cryptedb) << endl;
-	cout << "in text : \n" << endl;
-	cout << bits_to_char(cryptedb) << endl;
+}
 
 
-	cout << "\n\nthe key is :" << endl;
-	cout << bits_to_hex(keyb) << endl;
+void showCommandlineHelp()
+{
+	cout << "\nThis program can be used to encrypt/decrypt text files\n\n"
+		 << "Available options are :\n\n"
+		 << "flag 			  usage                                example\n"
+		 << "--------------------------------------------------------------------------\n"
+		 << "-f or -F         indicating input text file address   -f input.txt\n"
+		 << "-fh or -FH       indicating input hex file address    -fh input.txt\n"
+		 << "-k or -K         key for encryption / decryption      -k hello\n"
+		 << "-kh or -KH       key in hex form                      -kh 68656c6c6f\n"
+		 << "-e or -E         for choosing encryption mode         -e\n"
+		 << "-d or -D         for choosing decryption mode         -d\n"
+		 << "-o or -O         indicating output file address       -o o.txt\n"
+		 << "-help or help    showing help section                 -help\n\n"
+		 << "example :\n\n"
+		 << "DES -d -f text.txt -o encryptedText.txt -k iAmBest" << endl;
 
+}
 
+<<<<<<< HEAD
 /*	char exit;
  	cout << "enter 'x' to exit." << endl;
 	while (exit != 'x')
 		cin >> exit;
 
 	return 0;
+=======
+void showHelp()
+{
+	cout << "\nThis program can encrypt/decrypt texts with use of\n"
+		 << "DES encryption algorithm.\n\n"
+		 << "In order to encrypt/decrtypt texts longer than 500 characters it is recommended,\n"
+		 << "use the command line to encrypt/decrypt an entire text file.\n\n"
+		 << "The commands available in the program are: \n\n"
+		 << "'e' or 'encrypt'        choose encryption\n"
+		 << "'d' or 'decrypt'        choose decryption\n"
+		 << "'c' or 'cancel'         cancel any chosen action\n"
+		 << "'exit'                  exit the program\n"
+		 << "'help'                  show help" << endl;
+>>>>>>> refs/remotes/origin/shell-enhancement
 }
 
 
