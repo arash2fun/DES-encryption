@@ -245,7 +245,6 @@ int encrypt(bool decrypt, bool hexText, bool hexKey, bool file, string inadd, st
 
 string des(string text, string k, const bool decrypt)
 {
-	bit subkeys[16][48];
 	char block[16], pblock[16], key[16];
 	string answer;
 
@@ -256,14 +255,11 @@ string des(string text, string k, const bool decrypt)
 		key[i] = k[i];
 	}
 
-	DESblock::create_subkeys(subkeys, key);
-
-
 	for (unsigned int i = 0; i < (text.size()/16); i++)
 	{
 		for (unsigned int j = 0; j < 16; j++)
 			block[j] = text[i*16 + j];
-		DESblock::encrypt_block(pblock, block, subkeys, decrypt);
+		DESblock::encrypt_block(pblock, block, key, decrypt);
 		answer.append(pblock, 16);
 	}
 
