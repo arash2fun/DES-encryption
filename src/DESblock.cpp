@@ -57,7 +57,7 @@ const char DESblock::_E[] = {32, 1, 2, 3, 4, 5,
 			24, 25, 26, 27, 28, 29,
 			28, 29, 30, 31, 32, 1};
 
-const int DESblock::_SBOX[8][4][16] = {
+const char DESblock::_SBOX[8][4][16] = {
 					 {{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
 					  {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
 					  {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
@@ -196,7 +196,7 @@ int DESblock::get_dec(const char & h)
 	}
 }
 
-int DESblock::pow(const int a, const int n)
+int DESblock::pow(const int & a, const int & n)
 {
 	int b = 1;
 	for (int i = 0; i < n; i++)
@@ -204,8 +204,9 @@ int DESblock::pow(const int a, const int n)
 	return b;
 }
 
-DESblock::bits DESblock::dec_to_bits(unsigned int d, const int n)
+DESblock::bits DESblock::dec_to_bits(const char & dec, const int & n)
 {
+	int d = dec;
 	bits out(n);
 	for (int i = 0; i < n; i++)
 	{
@@ -241,7 +242,7 @@ DESblock::bits DESblock::permute(const bits & b, const char t[], const int & siz
 	return a;
 }
 
-DESblock::bits DESblock::shift_left(bits b, const int n)
+DESblock::bits DESblock::shift_left(bits b, const int & n)
 {
 	for (int i = 0; i < n; i++)
 		b.append(b[0]);
@@ -321,7 +322,7 @@ DESblock::bits DESblock::feistel(const bits & Rn, const bits & Kn)
 	return permute(out, _P, 32);
 }
 
-void DESblock::encrypt_block(char crypted[], char text[], char key[], bool decrypt)
+void DESblock::encrypt_block(char crypted[], char text[], char key[], const bool & decrypt)
 {
 	bits subkeys[16] = bits(48);
 	bits bkey = create_bits(key);
@@ -369,7 +370,7 @@ void DESblock::encrypt_block(char crypted[], char text[], char key[], bool decry
 
 //**************************************************************************************
 
-bool DESblock::bits::read(const int digit) const
+bool DESblock::bits::read(const int & digit) const
 {
 	if (digit > _length) return 0;
 	unsigned char byte =  digit / 8;
@@ -377,7 +378,7 @@ bool DESblock::bits::read(const int digit) const
 	return *_list[byte] >> ( 7 - bitInByte ) & 1;
 }
 
-void DESblock::bits::assign(const int pos, const bool b)
+void DESblock::bits::assign(const int & pos, const bool & b)
 {
 	if (pos >= 0 && pos < _length)
 	{
@@ -408,7 +409,7 @@ DESblock::bits::~bits()
 		delete _list[i];
 	delete _list;
 }
-void DESblock::bits::append(const bool b)
+void DESblock::bits::append(const bool & b)
 {
 	unsigned char bit = b << (_length % 8 == 0 ? 0 : (8 - _length % 8) );
 	for (int i = 0; i < (_size - 1)  ; i++)
@@ -436,7 +437,7 @@ DESblock::bits & DESblock::bits::operator =(const bits & rhs)
 	return *this;
 }
 
-DESblock::bits::bits(const int a, const bool allTrue)
+DESblock::bits::bits(const int & a, const bool & allTrue)
 {
 	_length = a;
 	_size = a / 8 + (a % 8 == 0 ? 0 : 1);
