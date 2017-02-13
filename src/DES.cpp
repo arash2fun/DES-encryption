@@ -23,6 +23,8 @@ string getText(int n = 0);
 string toHex(string a);
 string des(string text, string key, const bool decrypt = 0);
 void showCommandlineHelp();
+void decode();
+string hexToText(string &);
 
 
 
@@ -103,6 +105,9 @@ int shell()
 			break;
 		case 6:
 			showHelp();
+			break;
+		case 7:
+			decode();
 			break;
 		}
 	} while (command);
@@ -267,6 +272,27 @@ string des(string text, string k, const bool decrypt)
 }
 
 
+void decode()
+{
+	cout << "\nenter the hex code to decode : \n"
+		 << "specify the end of the text by '~' sign\n";
+	string hex = getText();
+	string text = hexToText(hex);
+	cout << "\nyour decoded text is :\n\n" << text << endl;
+}
+
+string hexToText(string & hex)
+{
+	string text;
+	for (unsigned int i = 0; i < hex.size(); i+=2)
+	{
+		char c;
+		c = DESblock::get_dec(hex[i]) * 16 + DESblock::get_dec(hex[i + 1]);
+		text.push_back(c);
+	}
+	return text;
+}
+
 string getText(int n)
 {
 	char c;
@@ -303,6 +329,7 @@ int getCommand()
 	else if (command == "hex" || command == "h") 		return 4;
 	else if (command == "text" || command == "t") 		return 5;
 	else if (command == "help") 						return 6;
+	else if (command == "decode")						return 7;
 
 	else 												return 9;
 }
@@ -357,6 +384,7 @@ void showHelp()
 		 << "'e' or 'encrypt'        choose encryption\n"
 		 << "'d' or 'decrypt'        choose decryption\n"
 		 << "'c' or 'cancel'         cancel any chosen action\n"
+		 << "'decode'                translate hex code to text\n"
 		 << "'exit'                  exit the program\n"
 		 << "'help'                  show help" << endl;
 }
