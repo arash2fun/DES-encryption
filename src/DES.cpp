@@ -277,6 +277,8 @@ void decode()
 	cout << "\nenter the hex code to decode : \n"
 		 << "specify the end of the text by '~' sign\n";
 	string hex = getText();
+	cin.ignore(100, '\n');
+
 	string text = hexToText(hex);
 	cout << "\nyour decoded text is :\n\n" << text << endl;
 }

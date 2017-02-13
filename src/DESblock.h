@@ -21,14 +21,14 @@ public:
 
 private:
 	class bits;
-	static const char PC1[];
-	static const char PC2[];
-	static const char IP[];
-	static const char FP[];
-	static const char LEFT_SHIFT[];
-	static const char E[];
-	static const int SBOX[8][4][16];
-	static const char P[];
+	static const char _PC1[];
+	static const char _PC2[];
+	static const char _IP[];
+	static const char _FP[];
+	static const char _LEFT_SHIFT[];
+	static const char _E[];
+	static const int _SBOX[8][4][16];
+	static const char _P[];
 	static int pow(const int a, const int n);
 	static void create_subkeys(bits subkeys[16], const bits & key);
 
