@@ -7,7 +7,7 @@
 
 #include "DESblock.h"
 
-const char DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
+const char DESblock::_PC1[] = {57, 49, 41, 33, 25, 17, 9,
 		 1, 58, 50, 42, 34, 26, 18,
 		 10, 2, 59, 51, 43, 35, 27,
 		 19, 11, 3, 60, 52, 44, 36,
@@ -16,7 +16,7 @@ const char DESblock::PC1[] = {57, 49, 41, 33, 25, 17, 9,
 		 14, 6, 61, 53, 45, 37, 29,
 		 21, 13, 5, 28, 20, 12, 4};
 
-const char DESblock::PC2[] = {14, 17, 11, 24, 1, 5,
+const char DESblock::_PC2[] = {14, 17, 11, 24, 1, 5,
 			3, 28, 15, 6, 21, 10,
 			23, 19, 12, 4, 26, 8,
 			16, 7, 27, 20, 13, 2,
@@ -25,7 +25,7 @@ const char DESblock::PC2[] = {14, 17, 11, 24, 1, 5,
 			44, 49, 39, 56, 34, 53,
 			46, 42, 50, 36, 29, 32};
 
-const char DESblock::IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
+const char DESblock::_IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
 			 60, 52, 44, 36, 28, 20, 12, 4,
 			 62, 54, 46, 38, 30, 22, 14, 6,
 			 64, 56, 48, 40, 32, 24, 16, 8,
@@ -34,7 +34,7 @@ const char DESblock::IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
 			 61, 53, 45, 37, 29, 21, 13, 5,
 			 63, 55, 47, 39, 31, 23, 15, 7};
 
-const char DESblock::FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
+const char DESblock::_FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
 			 39, 7, 47, 15, 55, 23, 63, 31,
 			 38, 6, 46, 14, 54, 22, 62, 30,
 			 37, 5, 45, 13, 53, 21, 61, 29,
@@ -43,12 +43,12 @@ const char DESblock::FP[] = {40, 8, 48, 16, 56, 24, 64, 32,
 			 34, 2, 42, 10, 50, 18, 58, 26,
 			 33, 1, 41, 9,  49, 17, 57, 25};
 
-const char DESblock::LEFT_SHIFT[] = {1, 1, 2, 2,
+const char DESblock::_LEFT_SHIFT[] = {1, 1, 2, 2,
 						2, 2, 2, 2,
 						1, 2, 2, 2,
 						2, 2, 2, 1};
 
-const char DESblock::E[] = {32, 1, 2, 3, 4, 5,
+const char DESblock::_E[] = {32, 1, 2, 3, 4, 5,
 			4, 5, 6, 7, 8, 9,
 			8, 9, 10, 11, 12, 13,
 			12, 13, 14, 15, 16, 17,
@@ -57,7 +57,7 @@ const char DESblock::E[] = {32, 1, 2, 3, 4, 5,
 			24, 25, 26, 27, 28, 29,
 			28, 29, 30, 31, 32, 1};
 
-const int DESblock::SBOX[8][4][16] = {
+const int DESblock::_SBOX[8][4][16] = {
 					 {{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
 					  {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
 					  {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
@@ -99,7 +99,7 @@ const int DESblock::SBOX[8][4][16] = {
 					 {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}}
 					 };
 
-const char DESblock::P[] = {16, 7, 20, 21,
+const char DESblock::_P[] = {16, 7, 20, 21,
 			29, 12, 28, 17,
 			1, 15, 23, 26,
 			5, 18, 31, 10,
@@ -267,7 +267,7 @@ void DESblock::create_hex(char text[], const bits & b)
 
 void DESblock::create_subkeys(bits subkeys[16], const bits & key)
 {
-	bits pb = DESblock::permute(key, PC1, 56);
+	bits pb = DESblock::permute(key, _PC1, 56);
 
 	bits C[17] = bits(28);
 	bits D[17] = bits(28);
@@ -282,21 +282,21 @@ void DESblock::create_subkeys(bits subkeys[16], const bits & key)
 
 	for (int i = 0; i < 16; i++)
 	{
-		C[i + 1] = DESblock::shift_left(C[i], LEFT_SHIFT[i]);
-		D[i + 1] = DESblock::shift_left(D[i], LEFT_SHIFT[i]);
+		C[i + 1] = DESblock::shift_left(C[i], _LEFT_SHIFT[i]);
+		D[i + 1] = DESblock::shift_left(D[i], _LEFT_SHIFT[i]);
 
 		for (int j = 0; j < 28; j++)
 		{
 			CD[i][j] = C[i + 1][j];
 			CD[i][j + 28] = D[i + 1][j];
 		}
-		subkeys[i] = DESblock::permute(CD[i], PC2, 48);
+		subkeys[i] = DESblock::permute(CD[i], _PC2, 48);
 	}
 }
 
 DESblock::bits DESblock::feistel(const bits & Rn, const bits & Kn)
 {
-	bits Er = permute(Rn, E, 48);
+	bits Er = permute(Rn, _E, 48);
 	bits Kr(48);
 
 	for (int i = 0; i < 48; i++)
@@ -314,11 +314,11 @@ DESblock::bits DESblock::feistel(const bits & Rn, const bits & Kn)
 			colb[j] = Kr[6 * i + j + 1];
 		col = bits_to_dec(colb);
 
-		bits sout = dec_to_bits(SBOX[i][row][col]);
+		bits sout = dec_to_bits(_SBOX[i][row][col]);
 		for (int j = 0; j < 4; j++)
 			out[4 * i + j] = sout[j];
 	}
-	return permute(out, P, 32);
+	return permute(out, _P, 32);
 }
 
 void DESblock::encrypt_block(char crypted[], char text[], char key[], bool decrypt)
@@ -329,7 +329,7 @@ void DESblock::encrypt_block(char crypted[], char text[], char key[], bool decry
 	create_subkeys(subkeys, bkey);
 
 	bits block = create_bits(text);
-	block = permute(block, IP, 64);
+	block = permute(block, _IP, 64);
 
 	bits L[17] = bits(32);
 	bits R[17] = bits(32);
@@ -362,7 +362,7 @@ void DESblock::encrypt_block(char crypted[], char text[], char key[], bool decry
 		}
 	}
 
-	cryptedBlock = permute(cryptedBlock, FP, 64);
+	cryptedBlock = permute(cryptedBlock, _FP, 64);
 
 	create_hex(crypted, cryptedBlock);
 }
